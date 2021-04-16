@@ -1,6 +1,10 @@
 # CAP 4601 Project 2
 
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/TobiasJacob/cap-4601-project-2).
+
 ## Dev setup
+
+This project requires a hell of dependencies. Mostly due to various deep learning frameworks used in the LUKE model. Luckly, those dependencies can be managed well with poetry. However, it looks like this model only works under linux.
 
 [Install poetry](https://github.com/python-poetry/poetry) with
 
