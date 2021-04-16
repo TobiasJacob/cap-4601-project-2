@@ -4,5 +4,10 @@
     "python.formatting.provider": "black",
     "editor.formatOnSave": true,
     "python.pythonPath": "${workspaceFolder}/.venv/bin/python3.7",
-    "files.insertFinalNewline": true
+    "files.insertFinalNewline": true,
+    "[python]": {
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+        }
+    }
 }
