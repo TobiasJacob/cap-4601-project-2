@@ -3,6 +3,8 @@ tasks:
   - init: |
       export PIP_USER=false
       pyenv install 3.7.1
+      pyenv shell 3.7.1
+      pip install --upgrade pip
       pip install poetry
       poetry config virtualenvs.in-project true
       poetry install
