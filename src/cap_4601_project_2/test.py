@@ -1,2 +1,3 @@
-def test():
+def test() -> int:
     print("Test")
+    return 23

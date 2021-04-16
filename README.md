@@ -27,4 +27,27 @@ Update the pre-commit hooks
 poetry run pre-commit install
 ```
 
-for proper code styling.
+for proper code styling. Check style with
+
+```console
+poetry run flake8
+```
+
+.Check typing with
+
+```console
+poetry run mypy .
+```
+
+Test the code with pytest
+
+```console
+poetry run pytest
+```
+
+and get coverage results
+
+```console
+poetry run coverage run -m pytest
+poetry run coverage report -m
+```

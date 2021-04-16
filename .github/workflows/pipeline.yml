@@ -1,0 +1,43 @@
+# From https://www.marwandebbiche.com/posts/python-package-tooling/
+name: CI/CD # pipeline's name that will appear in Github Actions
+
+on: # events that trigger our pipeline: push on any branch and release creation
+  push:
+  release:
+    types: [created]
+
+jobs:
+  test:
+    # Our test job will run on ubuntu.
+    # We define matrix strategy for python-version so that
+    # our tests are run on multiple python versions:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run image # install poetry
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: 1.0.10
+      - name: Install dependencies # install all dependencies
+        run: poetry install
+      - name: Flake8 # Run pylint static analysis
+        run: |
+          poetry run flake8
+      - name: mypy # Run mypy static analysis
+        run: |
+          poetry run mypy .
+      - name: Pytest # Run pytest
+        run: |
+          poetry run coverage run -m pytest
+          poetry run coverage report
+      - name: Coveralls # Send coverage metrics to coveralls.io
+        run: poetry run coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
