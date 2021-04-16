@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "cap-4601-project-2"
+version = "0.1.0"
+description = ""
+authors = ["Tobias Jacob <tobi.jacob@gmx.net>"]
+readme = 'README.md'
+keywords = ['natural language processing']
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+black = "^20.8b1"
+flake8 = "^3.9.1"
+pre-commit = "^2.12.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+src = "src.cap_4601_project_2:main"
+
+[tool.black]
+line-length = 79
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[flake8]
+ignore = ["E203", "E266", "E501", "W503", "F403", "F401"]
+max-line-length = 79
+max-complexity = 18
+select = ["B","C","E","F","W","T4","B9"]

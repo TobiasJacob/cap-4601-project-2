@@ -1,0 +1,8 @@
+{
+    "python.linting.flake8Enabled": true,
+    "python.linting.enabled": true,
+    "python.formatting.provider": "black",
+    "editor.formatOnSave": true,
+    "python.pythonPath": "${workspaceFolder}/.venv/bin/python3.7",
+    "files.insertFinalNewline": true
+}
