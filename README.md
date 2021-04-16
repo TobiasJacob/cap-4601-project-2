@@ -22,7 +22,7 @@ poetry install
 add packages with
 
 ```console
-poetry add pendulum@latest
+poetry add <package>
 ```
 
 Update the pre-commit hooks
