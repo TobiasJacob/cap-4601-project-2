@@ -8,10 +8,6 @@ keywords = ['natural language processing']
 
 [tool.poetry.dependencies]
 python = "3.7.1"
-tensorflow = "^2.4.1"
-transformers = "2.4.1"
-wikipedia2vec = "1.0.4"
-luke = {git = "https://github.com/studio-ousia/luke"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
