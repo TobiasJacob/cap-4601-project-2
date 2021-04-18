@@ -1222,7 +1222,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "3.7.10"
-content-hash = "e0dda715606a508d62ae83d3d5a6c4fc5634d582ef2f0b930ad65a3bddbc473e"
+content-hash = "fb4b36cdbeebc3494b1c2cd06b8e0ecf72f77667c414f17a3e67bb5d3724a9d1"
 
 [metadata.files]
 allennlp = [
