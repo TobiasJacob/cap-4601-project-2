@@ -1,7 +1,6 @@
 import logging
 
 import torch
-import torch.nn.functional as F
 from allennlp.modules import FeedForward
 from allennlp.nn.util import batched_index_select
 from torch import nn
@@ -38,7 +37,7 @@ class BertForEntity(BertPreTrainedModel):
                 input_dim=config.hidden_size * 2 + width_embedding_dim,
                 num_layers=2,
                 hidden_dims=head_hidden_dim,
-                activations=F.relu,
+                activations=nn.ReLU(),
                 dropout=0.2,
             ),
             nn.Linear(head_hidden_dim, num_ner_labels),
@@ -49,11 +48,11 @@ class BertForEntity(BertPreTrainedModel):
     def _get_span_embeddings(
         self, input_ids, spans, token_type_ids=None, attention_mask=None
     ):
-        sequence_output, pooled_output = self.bert(
+        sequence_output = self.bert(
             input_ids=input_ids,
             token_type_ids=token_type_ids,
             attention_mask=attention_mask,
-        )
+        )["last_hidden_state"]
 
         sequence_output = self.hidden_dropout(sequence_output)
 
@@ -151,7 +150,7 @@ class AlbertForEntity(AlbertPreTrainedModel):
                 input_dim=config.hidden_size * 2 + width_embedding_dim,
                 num_layers=2,
                 hidden_dims=head_hidden_dim,
-                activations=F.relu,
+                activations=nn.ReLU(),
                 dropout=0.2,
             ),
             nn.Linear(head_hidden_dim, num_ner_labels),
@@ -162,11 +161,11 @@ class AlbertForEntity(AlbertPreTrainedModel):
     def _get_span_embeddings(
         self, input_ids, spans, token_type_ids=None, attention_mask=None
     ):
-        sequence_output, pooled_output = self.albert(
+        sequence_output = self.albert(
             input_ids=input_ids,
             token_type_ids=token_type_ids,
             attention_mask=attention_mask,
-        )
+        )["last_hidden_state"]
 
         sequence_output = self.hidden_dropout(sequence_output)
 
