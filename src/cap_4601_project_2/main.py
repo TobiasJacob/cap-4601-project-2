@@ -1,4 +1,4 @@
-from pretrainedEntity.entityFinder import EntityFinder
+from pureModel.entityFinder import EntityFinder
 
 
 def main() -> None:

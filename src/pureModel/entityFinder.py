@@ -2,7 +2,7 @@ import torch
 from transformers import BertTokenizer
 from transformers import AlbertTokenizer
 
-from pretrainedEntity.models import BertForEntity, AlbertForEntity
+from pureModel.entityModels import BertForEntity, AlbertForEntity
 
 task_ner_labels = {
     "ace04": ["FAC", "WEA", "LOC", "VEH", "GPE", "ORG", "PER"],
