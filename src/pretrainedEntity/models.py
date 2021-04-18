@@ -1,17 +1,17 @@
-import json
 import logging
-import os
 
-import numpy as np
 import torch
 import torch.nn.functional as F
 from allennlp.modules import FeedForward
-from allennlp.nn import Activation, util
 from allennlp.nn.util import batched_index_select
 from torch import nn
 from torch.nn import CrossEntropyLoss
-from transformers import (AlbertModel, AlbertPreTrainedModel, AlbertTokenizer,
-                          BertModel, BertPreTrainedModel, BertTokenizer)
+from transformers import (
+    AlbertModel,
+    AlbertPreTrainedModel,
+    BertModel,
+    BertPreTrainedModel,
+)
 
 logger = logging.getLogger("root")
 
@@ -239,4 +239,3 @@ class AlbertForEntity(AlbertPreTrainedModel):
             return loss, logits, spans_embedding
         else:
             return logits, spans_embedding, spans_embedding
-
