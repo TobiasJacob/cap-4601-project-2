@@ -1,9 +1,11 @@
 import re
+from typing import List, Tuple
 
 import torch
 from transformers.models.albert import AlbertTokenizer
 
-datasetpath = "pretrained/SemEval2010_task8_all_data/SemEval2010_task8_training/TRAIN_FILE.TXT"  # noqa: E501
+datasetpathTrain = "pretrained/SemEval2010_task8_all_data/SemEval2010_task8_training/TRAIN_FILE.TXT"  # noqa: E501
+datasetpathTest = "pretrained/SemEval2010_task8_all_data/SemEval2010_task8_testing_keys/TEST_FILE_FULL.TXT"  # noqa: E501
 
 relationTypes = [
     "Cause-Effect(e1,e2)",
@@ -28,23 +30,77 @@ relationTypes = [
 ]
 
 
+def getSpans(tokens: List[str], maxSpanLen: int) -> List[Tuple[int, int, int]]:
+    tokensL = len(tokens)
+    numSpans = 0
+    for spanL in range(1, maxSpanLen + 1):
+        numSpans += tokensL - spanL + 1
+    spans = torch.empty((numSpans, 3), dtype=int)
+    spanI = 0
+    for i in range(tokensL):
+        for j in range(i, min(tokensL, i + maxSpanLen)):
+            spans[spanI, 0] = i
+            spans[spanI, 1] = j
+            spans[spanI, 2] = j - i + 1
+            spanI += 1
+    return spans
+
+
 class SemevalDataset(torch.utils.data.Dataset):
     def __init__(self):
-        tokenizer = AlbertTokenizer.from_pretrained("albert-base-v2")
-        tokenizer.add_special_tokens(
+        self.tokenizer = AlbertTokenizer.from_pretrained("albert-base-v2")
+        self.tokenizer.add_special_tokens(
             {"additional_special_tokens": ["<e1>", "</e1>", "<e2>", "</e2>"]}
         )
-        lines = open(datasetpath).readlines()
-        sentences = lines[0::4]
+        lines1 = open(datasetpathTrain).readlines()
+        lines2 = open(datasetpathTest).readlines()
+        sentences = lines1[0::4] + lines2[0::4]
         sentences = [re.sub(r'^.*?"', "", l) for l in sentences]
         sentences = [re.sub(r'"\n', "", l) for l in sentences]
-        self.sentences = [tokenizer(l)["input_ids"] for l in sentences]
-        relations = lines[1::4]
+        self.sentences = [self.tokenizer(l)["input_ids"] for l in sentences]
+        relations = lines1[1::4] + lines2[1::4]
         relations = [re.sub(r"\n", "", l) for l in relations]
         self.relations = [relationTypes.index(l) for l in relations]
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int) -> Tuple[List[int], int]:
         return (self.sentences[index], self.relations[index])
 
     def __len__(self):
         return len(self.sentences)
+
+
+class EntityDataset(torch.utils.data.IterableDataset):
+    def __init__(self, batch_size=32, device="cpu"):
+        self.dataset = SemevalDataset()
+        self.batch_size = batch_size
+        self.device = device
+
+    def __iter__(self):
+        maxSpanLen = 3
+
+        markers = self.dataset.tokenizer.convert_tokens_to_ids(
+            ["<e1>", "</e1>", "<e2>", "</e2>"]
+        )
+        for sent, _ in self.dataset:
+            print(sent)
+            tokenTensor = [t for t in sent if t not in markers]
+            e1 = sent[sent.index(markers[0]) + 1 : sent.index(markers[1])]
+
+            e2 = sent[sent.index(markers[2]) + 1 : sent.index(markers[3])]
+
+            if len(e1) > maxSpanLen or len(e2) > maxSpanLen:
+                print("Warning, long entity in ", sent)
+
+            spans = getSpans(tokenTensor, maxSpanLen)
+            tokenSpans = [tokenTensor[span[0] : span[1] + 1] for span in spans]
+
+            labels = [1 if ts == e1 or ts == e2 else 0 for ts in tokenSpans]
+
+            yield (
+                torch.tensor(tokenTensor, device=self.device),
+                spans.to(self.device),
+                torch.tensor(
+                    labels,
+                    device=self.device,
+                ),
+            )

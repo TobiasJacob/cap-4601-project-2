@@ -1,6 +1,7 @@
-from semevalModel.semevalDataset import SemevalDataset
+from semevalModel.semevalDataset import EntityDataset
 
 
 def train():
-    dataset = SemevalDataset()
-    print(dataset[0])
+    dataset = EntityDataset()
+    tokenTensor, spans, labels = next(iter(dataset))
+    print(list(zip(spans, labels)))
