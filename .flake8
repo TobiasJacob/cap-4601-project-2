@@ -2,4 +2,4 @@
 max-line-length = 79
 max-complexity = 18
 exclude = .git,__pycache__,docs/source/conf.py,old,build,dist,.venv
-ignore = E741,E203
+ignore = E741,E203,W503
