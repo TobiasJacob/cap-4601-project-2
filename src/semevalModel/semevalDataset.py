@@ -4,8 +4,8 @@ from typing import List, Tuple
 import torch
 from transformers.models.albert import AlbertTokenizer
 
-datasetpathTrain = "pretrained/SemEval2010_task8_all_data/SemEval2010_task8_training/TRAIN_FILE.TXT"  # noqa: E501
-datasetpathTest = "pretrained/SemEval2010_task8_all_data/SemEval2010_task8_testing_keys/TEST_FILE_FULL.TXT"  # noqa: E501
+datasetpathTrain = "../pretrained/SemEval2010_task8_all_data/SemEval2010_task8_training/TRAIN_FILE.TXT"  # noqa: E501
+datasetpathTest = "../pretrained/SemEval2010_task8_all_data/SemEval2010_task8_testing_keys/TEST_FILE_FULL.TXT"  # noqa: E501
 
 relationTypes = [
     "Cause-Effect(e1,e2)",
@@ -47,8 +47,8 @@ def getSpans(tokens: List[str], maxSpanLen: int) -> List[Tuple[int, int, int]]:
 
 
 class SemevalDataset(torch.utils.data.Dataset):
-    def __init__(self):
-        self.tokenizer = AlbertTokenizer.from_pretrained("albert-base-v2")
+    def __init__(self, modelname):
+        self.tokenizer = AlbertTokenizer.from_pretrained(modelname)
         self.tokenizer.add_special_tokens(
             {"additional_special_tokens": ["<e1>", "</e1>", "<e2>", "</e2>"]}
         )
@@ -70,26 +70,25 @@ class SemevalDataset(torch.utils.data.Dataset):
 
 
 class EntityDataset(torch.utils.data.IterableDataset):
-    def __init__(self, batch_size=32, device="cpu"):
-        self.dataset = SemevalDataset()
+    def __init__(self, modelname, batch_size=32, device="cpu"):
+        self.dataset = SemevalDataset(modelname)
         self.batch_size = batch_size
         self.device = device
 
     def __iter__(self):
-        maxSpanLen = 3
+        maxSpanLen = 7
 
         markers = self.dataset.tokenizer.convert_tokens_to_ids(
             ["<e1>", "</e1>", "<e2>", "</e2>"]
         )
         for sent, _ in self.dataset:
-            print(sent)
             tokenTensor = [t for t in sent if t not in markers]
             e1 = sent[sent.index(markers[0]) + 1 : sent.index(markers[1])]
 
             e2 = sent[sent.index(markers[2]) + 1 : sent.index(markers[3])]
 
             if len(e1) > maxSpanLen or len(e2) > maxSpanLen:
-                print("Warning, long entity in ", sent)
+                print("Warning, long entity in ", sent, len(e1), len(e2))
 
             spans = getSpans(tokenTensor, maxSpanLen)
             tokenSpans = [tokenTensor[span[0] : span[1] + 1] for span in spans]

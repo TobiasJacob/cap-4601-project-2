@@ -24,20 +24,25 @@ class SemevalModel(AlbertPreTrainedModel):
         )
 
         self.ner_classifier = nn.Sequential(
-            FeedForward(
-                input_dim=config.hidden_size * 2 + width_embedding_dim,
-                num_layers=2,
-                hidden_dims=head_hidden_dim,
-                activations=nn.ReLU(),
-                dropout=0.2,
-            ),
+            nn.Linear(config.hidden_size * 2 + width_embedding_dim, head_hidden_dim),
+            nn.Dropout(.2),
+            nn.ReLU(),
+            nn.Linear(head_hidden_dim, head_hidden_dim),
+            nn.Dropout(.2),
+            nn.ReLU(),
             nn.Linear(head_hidden_dim, num_ner_labels),
         )
 
         self.init_weights()
 
-    def _get_span_embeddings(
-        self, input_ids, spans, token_type_ids=None, attention_mask=None
+    def forward(
+        self,
+        input_ids,
+        spans,
+        spans_mask,
+        spans_ner_label=None,
+        token_type_ids=None,
+        attention_mask=None,
     ):
         sequence_output = self.albert(
             input_ids=input_ids,
@@ -51,14 +56,14 @@ class SemevalModel(AlbertPreTrainedModel):
         spans: [batch_size, num_spans, 3]; 0: left_ned, 1: right_end, 2: width
         spans_mask: (batch_size, num_spans, )
         """
-        spans_start = spans[:, :, 0].view(spans.size(0), -1)
+        spans_start = spans[:, :, 0]
         spans_start_embedding = batched_index_select(
             sequence_output, spans_start
         )
-        spans_end = spans[:, :, 1].view(spans.size(0), -1)
+        spans_end = spans[:, :, 1]
         spans_end_embedding = batched_index_select(sequence_output, spans_end)
 
-        spans_width = spans[:, :, 2].view(spans.size(0), -1)
+        spans_width = spans[:, :, 2]
         spans_width_embedding = self.width_embedding(spans_width)
 
         spans_embedding = torch.cat(
@@ -72,23 +77,7 @@ class SemevalModel(AlbertPreTrainedModel):
         """
         spans_embedding: (batch_size, num_spans, hidden_size*2+embedding_dim)
         """
-        return spans_embedding
 
-    def forward(
-        self,
-        input_ids,
-        spans,
-        spans_mask,
-        spans_ner_label=None,
-        token_type_ids=None,
-        attention_mask=None,
-    ):
-        spans_embedding = self._get_span_embeddings(
-            input_ids,
-            spans,
-            token_type_ids=token_type_ids,
-            attention_mask=attention_mask,
-        )
         ffnn_hidden = []
         hidden = spans_embedding
         for layer in self.ner_classifier:
