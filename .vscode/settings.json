@@ -3,11 +3,12 @@
     "python.linting.enabled": true,
     "python.formatting.provider": "black",
     "editor.formatOnSave": true,
-    "python.pythonPath": ".venv/bin/python3.7",
+    "python.pythonPath": "/root/.cache/pypoetry/virtualenvs/cap-4601-project-2-0tRAURim-py3.8/bin/python3.8",
     "files.insertFinalNewline": true,
     "[python]": {
         "editor.codeActionsOnSave": {
             "source.organizeImports": true
         }
-    }
+    },
+    "python.linting.pylintEnabled": false
 }
