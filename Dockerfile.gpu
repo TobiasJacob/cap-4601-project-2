@@ -25,3 +25,8 @@ RUN apt install -y --no-install-recommends \
     build-essential
 
 RUN cd /tmp/proj && poetry install
+
+RUN groupadd -g 1000 -o tobi
+RUN useradd -m -u 1000 -g 1000 -o -s /bin/bash tobi
+USER tobi
+
