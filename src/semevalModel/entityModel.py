@@ -19,8 +19,8 @@ def f1_loss(
     recall = tp / (tp + fn + epsilon)
 
     f1 = 2 * (precision * recall) / (precision + recall + epsilon)
-    print(precision.item(), recall.item())
-    return f1
+    # print(precision.item(), recall.item())
+    return (f1, precision, recall)
 
 
 class SemevalModel(AlbertPreTrainedModel):
@@ -58,9 +58,9 @@ class SemevalModel(AlbertPreTrainedModel):
         input_ids,
         spans,
         spans_mask,
-        spans_ner_label=None,
         token_type_ids=None,
         attention_mask=None,
+        spans_ner_label=None,
     ):
         sequence_output = self.albert(
             input_ids=input_ids,

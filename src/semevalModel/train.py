@@ -5,6 +5,7 @@ from src.semevalModel.entityModel import SemevalModel
 from src.semevalModel.semevalDataset import EntityDataset
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
 from transformers import AdamW, get_linear_schedule_with_warmup
 
 
@@ -31,6 +32,7 @@ def collate_fn_padd(batch):
 
 
 def train():
+    writer = SummaryWriter()
     epochs = 5
     device = "cuda"
     model = SemevalModel.from_pretrained("albert-base-v2")
@@ -56,6 +58,7 @@ def train():
     tokenTensor, spans, labels = next(iter(dataset))
     dataloader = DataLoader(dataset, batch_size=32, collate_fn=collate_fn_padd)
 
+    iTot = 0
     for epoch in range(epochs):
         i = 0
         lossesTrain = []
@@ -70,41 +73,62 @@ def train():
         ) in dataloader:
             if i % 5 != 0:
                 model.train()
-                loss, f1, logits, spans_embedding = model(
+                loss, (f1, precision, recall), logits, spans_embedding = model(
                     input_ids,
                     spans,
                     spansMask,
-                    spans_ner_label,
                     token_type_ids,
                     attention_mask,
+                    spans_ner_label,
                 )
                 loss.backward()
                 optim.step()
                 scheduler.step()
                 optim.zero_grad()
                 lossesTrain.append(loss.item())
-                print(
-                    "Train",
-                    epoch,
-                    i,
-                    scheduler.get_lr(),
-                    f1.item(),
-                    lossesTrain[-1],
-                )
+                writer.add_scalar("loss/Train", lossesTrain[-1], iTot)
+                writer.add_scalar("f1/Train", f1.item(), iTot)
+                writer.add_scalar("precision/Train", precision.item(), iTot)
+                writer.add_scalar("recall/Train", recall.item(), iTot)
             else:
                 with torch.no_grad():
                     model.eval()
-                    loss, f1, logits, spans_embedding = model(
+                    (
+                        loss,
+                        (f1, precision, recall),
+                        logits,
+                        spans_embedding,
+                    ) = model(
                         input_ids,
                         spans,
                         spansMask,
-                        spans_ner_label,
                         token_type_ids,
                         attention_mask,
+                        spans_ner_label,
                     )
                     lossesVal.append(loss.item())
-                    print("Val", epoch, i, f1.item(), lossesVal[-1])
+                    writer.add_scalar("f1/Eval", f1.item(), iTot)
+                    writer.add_scalar("precision/Eval", precision.item(), iTot)
+                    writer.add_scalar("recall/Eval", recall.item(), iTot)
+                    writer.add_scalar("loss/Eval", lossesVal[-1], iTot)
+            if iTot % 20 == 0:
+                for (i2, lr) in enumerate(scheduler.get_lr()):
+                    writer.add_scalar("lr/" + str(i2), lr, iTot)
+            print(epoch, i)
+            if iTot == 0:
+                writer.add_graph(
+                    model,
+                    (
+                        input_ids,
+                        spans,
+                        spansMask,
+                        token_type_ids,
+                        attention_mask,
+                    ),
+                )
+                writer.flush()
             i += 1
+            iTot += 1
 
 
 train()
