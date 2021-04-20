@@ -3,7 +3,7 @@
     "python.linting.enabled": true,
     "python.formatting.provider": "black",
     "editor.formatOnSave": true,
-    "python.pythonPath": "/root/.cache/pypoetry/virtualenvs/cap-4601-project-2-0tRAURim-py3.8/bin/python3.8",
+    "python.pythonPath": "/opt/conda/bin/python",
     "files.insertFinalNewline": true,
     "[python]": {
         "editor.codeActionsOnSave": {

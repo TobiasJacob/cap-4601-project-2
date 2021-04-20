@@ -1,16 +1,32 @@
 import torch
-from allennlp.modules import FeedForward
 from allennlp.nn.util import batched_index_select
 from torch import nn
-from torch.nn import CrossEntropyLoss
+from torch.nn import BCELoss
 from transformers import AlbertModel, AlbertPreTrainedModel
+
+
+def f1_loss(
+    y_true: torch.Tensor, y_pred: torch.Tensor, is_training=False
+) -> torch.Tensor:
+    tp = (y_true * y_pred).sum().to(torch.float32)
+    # tn = ((1 - y_true) * (1 - y_pred)).sum().to(torch.float32)
+    fp = ((1 - y_true) * y_pred).sum().to(torch.float32)
+    fn = (y_true * (1 - y_pred)).sum().to(torch.float32)
+
+    epsilon = 1e-7
+
+    precision = tp / (tp + fp + epsilon)
+    recall = tp / (tp + fn + epsilon)
+
+    f1 = 2 * (precision * recall) / (precision + recall + epsilon)
+    print(precision.item(), recall.item())
+    return f1
 
 
 class SemevalModel(AlbertPreTrainedModel):
     def __init__(
         self,
         config,
-        num_ner_labels,
         head_hidden_dim=150,
         width_embedding_dim=150,
         max_span_length=8,
@@ -24,13 +40,15 @@ class SemevalModel(AlbertPreTrainedModel):
         )
 
         self.ner_classifier = nn.Sequential(
-            nn.Linear(config.hidden_size * 2 + width_embedding_dim, head_hidden_dim),
-            nn.Dropout(.2),
+            nn.Linear(
+                config.hidden_size * 2 + width_embedding_dim, head_hidden_dim
+            ),
+            nn.Dropout(0.2),
             nn.ReLU(),
             nn.Linear(head_hidden_dim, head_hidden_dim),
-            nn.Dropout(.2),
+            nn.Dropout(0.2),
             nn.ReLU(),
-            nn.Linear(head_hidden_dim, num_ner_labels),
+            nn.Linear(head_hidden_dim, 1),
         )
 
         self.init_weights()
@@ -78,30 +96,18 @@ class SemevalModel(AlbertPreTrainedModel):
         spans_embedding: (batch_size, num_spans, hidden_size*2+embedding_dim)
         """
 
-        ffnn_hidden = []
-        hidden = spans_embedding
-        for layer in self.ner_classifier:
-            hidden = layer(hidden)
-            ffnn_hidden.append(hidden)
-        logits = ffnn_hidden[-1]
+        logits = self.ner_classifier(spans_embedding)[:, :, 0]
+        logits = nn.functional.sigmoid(logits)
 
         if spans_ner_label is not None:
-            loss_fct = CrossEntropyLoss(reduction="sum")
-            if attention_mask is not None:
-                active_loss = spans_mask.view(-1) == 1
-                active_logits = logits.view(-1, logits.shape[-1])
-                active_labels = torch.where(
-                    active_loss,
-                    spans_ner_label.view(-1),
-                    torch.tensor(loss_fct.ignore_index).type_as(
-                        spans_ner_label
-                    ),
-                )
-                loss = loss_fct(active_logits, active_labels)
-            else:
-                loss = loss_fct(
-                    logits.view(-1, logits.shape[-1]), spans_ner_label.view(-1)
-                )
-            return loss, logits, spans_embedding
+            gold = spans_ner_label.type(torch.float)
+            pred = logits
+            loss_fct = BCELoss(
+                weight=(gold > 0.5) * 0.97 + 0.03, reduction="sum"
+            )  # 0 is 98.56% of the time, 1 is 1.44% of the time
+            loss = loss_fct(pred, gold)
+            # print(gold[0], pred[0])
+
+            return loss, f1_loss(gold, pred), logits, spans_embedding
         else:
-            return logits, spans_embedding, spans_embedding
+            return logits, spans_embedding

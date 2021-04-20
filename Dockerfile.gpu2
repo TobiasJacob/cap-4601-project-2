@@ -3,9 +3,10 @@ FROM nvcr.io/nvidia/pytorch:21.03-py3
 RUN pip install allennlp --no-dependencies
 RUN pip install transformers
 RUN pip install jsonnet>=0.10.0 overrides==3.1.0 more-itertools wandb==0.10.0 tensorboardX>=1.2
+RUN pip install pytest black flake8 pre-commit isort coverage mypy
 
-RUN groupadd -g 1000 -o tobi
-RUN useradd -m -u 1000 -g 1000 -o -s /bin/bash tobi
-USER tobi
+# RUN groupadd -g 1000 -o tobi
+# RUN useradd -m -u 1000 -g 1000 -o -s /bin/bash tobi
+# USER tobi
 
 # Then run code with cd src; python -m semevalModel.train

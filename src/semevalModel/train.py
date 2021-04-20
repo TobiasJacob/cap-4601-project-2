@@ -1,15 +1,17 @@
+from itertools import chain
+
 import torch
+from src.semevalModel.entityModel import SemevalModel
+from src.semevalModel.semevalDataset import EntityDataset
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
-
-from semevalModel.entityModel import SemevalModel
-from semevalModel.semevalDataset import EntityDataset, relationTypes
+from transformers import AdamW, get_linear_schedule_with_warmup
 
 
 def collate_fn_padd(batch):
     input_ids = pad_sequence([b[0] for b in batch], batch_first=True)
     token_type_ids = (input_ids == 0).type(torch.int)
-    attention_mask = torch.ones_like(input_ids)
+    attention_mask = (input_ids != 0).type(torch.int)
     spans = pad_sequence(
         [b[1] for b in batch], batch_first=True, padding_value=0
     )
@@ -29,24 +31,32 @@ def collate_fn_padd(batch):
 
 
 def train():
+    epochs = 5
     device = "cuda"
-    model = SemevalModel.from_pretrained(
-        "albert-base-v2", num_ner_labels=len(relationTypes)
-    )
+    model = SemevalModel.from_pretrained("albert-base-v2")
     model.to(device)
-    optim = torch.optim.Adam(
+    optim = AdamW(
         [
-            {"params": model.albert.parameters()},
-            {"params": model.width_embedding.parameters()},
-            {"params": model.ner_classifier.parameters()},
+            {"params": model.albert.parameters(), "lr": 1e-3},
+            {
+                "params": chain(
+                    model.width_embedding.parameters(),
+                    model.ner_classifier.parameters(),
+                ),
+                "lr": 1e-2,
+            },
         ]
     )
+    # optim = torch.optim.Adagrad(model.parameters(recurse=True), lr=0.01)
+    scheduler = get_linear_schedule_with_warmup(
+        optim, 100, epochs * 10000 / 32
+    )
 
-    dataset = EntityDataset("albert-base-v2", batch_size=32, device=device)
+    dataset = EntityDataset("albert-base-v2", device=device)
     tokenTensor, spans, labels = next(iter(dataset))
     dataloader = DataLoader(dataset, batch_size=32, collate_fn=collate_fn_padd)
 
-    for epoch in range(5):
+    for epoch in range(epochs):
         i = 0
         lossesTrain = []
         lossesVal = []
@@ -59,7 +69,8 @@ def train():
             spans_ner_label,
         ) in dataloader:
             if i % 5 != 0:
-                loss, logits, spans_embedding = model(
+                model.train()
+                loss, f1, logits, spans_embedding = model(
                     input_ids,
                     spans,
                     spansMask,
@@ -69,11 +80,21 @@ def train():
                 )
                 loss.backward()
                 optim.step()
+                scheduler.step()
+                optim.zero_grad()
                 lossesTrain.append(loss.item())
-                print("Train", lossesTrain[-1])
+                print(
+                    "Train",
+                    epoch,
+                    i,
+                    scheduler.get_lr(),
+                    f1.item(),
+                    lossesTrain[-1],
+                )
             else:
                 with torch.no_grad():
-                    loss, logits, spans_embedding = model(
+                    model.eval()
+                    loss, f1, logits, spans_embedding = model(
                         input_ids,
                         spans,
                         spansMask,
@@ -82,7 +103,7 @@ def train():
                         attention_mask,
                     )
                     lossesVal.append(loss.item())
-                    print("Val", lossesVal[-1])
+                    print("Val", epoch, i, f1.item(), lossesVal[-1])
             i += 1
 
 

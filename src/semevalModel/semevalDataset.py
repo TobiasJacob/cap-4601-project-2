@@ -4,8 +4,8 @@ from typing import List, Tuple
 import torch
 from transformers.models.albert import AlbertTokenizer
 
-datasetpathTrain = "../pretrained/SemEval2010_task8_all_data/SemEval2010_task8_training/TRAIN_FILE.TXT"  # noqa: E501
-datasetpathTest = "../pretrained/SemEval2010_task8_all_data/SemEval2010_task8_testing_keys/TEST_FILE_FULL.TXT"  # noqa: E501
+datasetpathTrain = "pretrained/SemEval2010_task8_all_data/SemEval2010_task8_training/TRAIN_FILE.TXT"  # noqa: E501
+datasetpathTest = "pretrained/SemEval2010_task8_all_data/SemEval2010_task8_testing_keys/TEST_FILE_FULL.TXT"  # noqa: E501
 
 relationTypes = [
     "Cause-Effect(e1,e2)",
@@ -70,9 +70,8 @@ class SemevalDataset(torch.utils.data.Dataset):
 
 
 class EntityDataset(torch.utils.data.IterableDataset):
-    def __init__(self, modelname, batch_size=32, device="cpu"):
+    def __init__(self, modelname, device="cpu"):
         self.dataset = SemevalDataset(modelname)
-        self.batch_size = batch_size
         self.device = device
 
     def __iter__(self):
@@ -94,6 +93,7 @@ class EntityDataset(torch.utils.data.IterableDataset):
             tokenSpans = [tokenTensor[span[0] : span[1] + 1] for span in spans]
 
             labels = [1 if ts == e1 or ts == e2 else 0 for ts in tokenSpans]
+            # labels = [1 if ts[2] == 1 else 0 for ts in spans]
 
             yield (
                 torch.tensor(tokenTensor, device=self.device),
