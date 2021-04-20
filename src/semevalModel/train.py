@@ -37,13 +37,13 @@ def train():
     model.to(device)
     optim = AdamW(
         [
-            {"params": model.albert.parameters(), "lr": 1e-3},
+            {"params": model.albert.parameters(), "lr": 1e-4},
             {
                 "params": chain(
                     model.width_embedding.parameters(),
                     model.ner_classifier.parameters(),
                 ),
-                "lr": 1e-2,
+                "lr": 1e-3,
             },
         ]
     )
