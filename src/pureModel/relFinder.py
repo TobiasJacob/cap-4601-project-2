@@ -57,7 +57,6 @@ class RelFinder:
         possibleRelations = []
         classes = task_ner_labels[self.task]
         tokens = self.rel_tokenizer.tokenize(text)
-        print(tokens)
         for i in range(len(entities)):
             for j in range(len(entities)):
                 if i != j:

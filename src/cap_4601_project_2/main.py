@@ -10,7 +10,9 @@ from transformers.models.albert import AlbertTokenizer
 
 
 def main() -> None:
-    sentencesJoined = "The bread is made with milk. "
+    sentencesJoined = (
+        "The bread is made with milk. A major company releases a new phone."
+    )
     print(sentencesJoined)
     with torch.no_grad():
         # Model 1
