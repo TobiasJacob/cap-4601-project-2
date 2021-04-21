@@ -33,7 +33,7 @@ relationTypes = [
 def getSpans(tokens: List[str], maxSpanLen: int) -> List[Tuple[int, int, int]]:
     tokensL = len(tokens)
     numSpans = 0
-    for spanL in range(1, maxSpanLen + 1):
+    for spanL in range(1, min(tokensL + 1, 1 + maxSpanLen)):
         numSpans += tokensL - spanL + 1
     spans = torch.empty((numSpans, 3), dtype=int)
     spanI = 0

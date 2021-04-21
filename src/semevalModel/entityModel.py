@@ -1,7 +1,9 @@
 import torch
 from allennlp.nn.util import batched_index_select
+from src.semevalModel.semevalDataset import getSpans
 from torch import nn
 from torch.nn import BCELoss
+from torch.nn.utils.rnn import pad_sequence
 from transformers import AlbertModel, AlbertPreTrainedModel
 
 
@@ -57,6 +59,29 @@ class SemevalModel(AlbertPreTrainedModel):
 
         self.init_weights()
 
+    def getEntities(self, tokenizer, sentences, maxSpanLen=8):
+        tokens = tokenizer(sentences)["input_ids"]
+        input_ids = pad_sequence(
+            [torch.tensor(t) for t in tokens], batch_first=True
+        )
+        spanBatch = [getSpans(t, maxSpanLen) for t in tokens]
+        spanBatch = pad_sequence(spanBatch, batch_first=True)
+        spanprop, _ = self(
+            input_ids=input_ids,
+            spans=spanBatch,
+            spans_mask=spanBatch[:, :, 2] != 0,
+            token_type_ids=(input_ids == 0).type(torch.int),
+            attention_mask=(input_ids != 0).type(torch.int),
+            spans_ner_label=None,
+        )
+        spanBatch = [spans[p > 0.5] for spans, p in zip(spanBatch, spanprop)]
+        cleartext = [
+            tokenizer.convert_ids_to_tokens(t[s[0].item() : s[1].item() + 1])
+            for (t, spans) in zip(tokens, spanBatch)
+            for s in spans
+        ]
+        return spanBatch, tokens, cleartext
+
     def forward(
         self,
         input_ids,
@@ -101,7 +126,7 @@ class SemevalModel(AlbertPreTrainedModel):
         """
 
         logits = self.ner_classifier(spans_embedding)[:, :, 0]
-        logits = nn.functional.sigmoid(logits)
+        logits = torch.sigmoid(logits)
 
         if spans_ner_label is not None:
             gold = spans_ner_label.type(torch.float)

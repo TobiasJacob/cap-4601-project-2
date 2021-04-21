@@ -130,6 +130,7 @@ def train():
             i += 1
             iTot += 1
         model.save_pretrained(modelDir + "/" + str(epoch))
+        dataset.dataset.tokenizer.save_pretrained(modelDir + "/" + str(epoch))
 
 
 train()
