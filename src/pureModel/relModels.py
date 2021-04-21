@@ -1,9 +1,12 @@
 import torch
 from torch import nn
 from torch.nn import CrossEntropyLoss
-
-from transformers import BertModel, BertPreTrainedModel
-from transformers import AlbertModel, AlbertPreTrainedModel
+from transformers import (
+    AlbertModel,
+    AlbertPreTrainedModel,
+    BertModel,
+    BertPreTrainedModel,
+)
 
 BertLayerNorm = torch.nn.LayerNorm
 

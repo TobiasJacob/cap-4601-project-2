@@ -1,8 +1,6 @@
 import torch
-from transformers import BertTokenizer
-from transformers import AlbertTokenizer
-
-from pureModel.entityModels import BertForEntity, AlbertForEntity
+from src.pureModel.entityModels import AlbertForEntity, BertForEntity
+from transformers import AlbertTokenizer, BertTokenizer
 
 task_ner_labels = {
     "ace04": ["FAC", "WEA", "LOC", "VEH", "GPE", "ORG", "PER"],
@@ -66,7 +64,7 @@ class EntityFinder:
         entities = [
             (spans[i], v) for i, v in enumerate(predicted_label[0]) if v != 0
         ]
-        return entities
+        return (entities, tokens)
 
     def printEntities(self, text, entities):
         tokens = self.tokenizer.tokenize(text)
