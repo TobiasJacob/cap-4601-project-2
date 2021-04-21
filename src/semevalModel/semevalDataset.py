@@ -65,7 +65,7 @@ class SemevalDataset(torch.utils.data.Dataset):
     def __getitem__(self, index: int) -> Tuple[List[int], int]:
         return (self.sentences[index], self.relations[index])
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.sentences)
 
 
@@ -102,4 +102,22 @@ class EntityDataset(torch.utils.data.IterableDataset):
                     labels,
                     device=self.device,
                 ),
+            )
+
+
+class RelationDataset(torch.utils.data.IterableDataset):
+    def __init__(self, modelname, device="cpu"):
+        self.dataset = SemevalDataset(modelname)
+        self.device = device
+
+    def __iter__(self):
+        markers = self.dataset.tokenizer.convert_tokens_to_ids(
+            ["<e1>", "</e1>", "<e2>", "</e2>"]
+        )
+        for sent, rel in self.dataset:
+            yield (
+                torch.tensor(sent, device=self.device),
+                torch.tensor(rel, device=self.device),
+                torch.tensor(sent.index(markers[0]), device=self.device),
+                torch.tensor(sent.index(markers[2]), device=self.device),
             )

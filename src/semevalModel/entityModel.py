@@ -39,12 +39,16 @@ class SemevalModel(AlbertPreTrainedModel):
             max_span_length + 1, width_embedding_dim
         )
 
+        self.layer_norm = nn.LayerNorm(
+            config.hidden_size * 2 + width_embedding_dim
+        )
         self.ner_classifier = nn.Sequential(
             nn.Linear(
                 config.hidden_size * 2 + width_embedding_dim, head_hidden_dim
             ),
             nn.Dropout(0.2),
             nn.ReLU(),
+            nn.LayerNorm(head_hidden_dim),
             nn.Linear(head_hidden_dim, head_hidden_dim),
             nn.Dropout(0.2),
             nn.ReLU(),

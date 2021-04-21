@@ -32,8 +32,9 @@ def collate_fn_padd(batch):
 
 
 def train():
-    writer = SummaryWriter()
-    epochs = 5
+    writer = SummaryWriter(comment="Entity")
+    modelDir = writer.log_dir.replace("runs", "models")
+    epochs = 20
     device = "cuda"
     model = SemevalModel.from_pretrained("albert-base-v2")
     model.to(device)
@@ -55,7 +56,6 @@ def train():
     )
 
     dataset = EntityDataset("albert-base-v2", device=device)
-    tokenTensor, spans, labels = next(iter(dataset))
     dataloader = DataLoader(dataset, batch_size=32, collate_fn=collate_fn_padd)
 
     iTot = 0
@@ -129,6 +129,7 @@ def train():
                 writer.flush()
             i += 1
             iTot += 1
+        model.save_pretrained(modelDir + "/" + str(epoch))
 
 
 train()
