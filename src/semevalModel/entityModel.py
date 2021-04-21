@@ -74,11 +74,23 @@ class SemevalModel(AlbertPreTrainedModel):
             attention_mask=(input_ids != 0).type(torch.int),
             spans_ner_label=None,
         )
-        spanBatch = [spans[p > 0.5] for spans, p in zip(spanBatch, spanprop)]
+        spanI1 = spanprop.argmax(1)
+        spans1 = spanBatch[torch.arange(len(spanI1)), spanI1].clone()
+        spanprop[torch.arange(len(spanI1)), spanI1] = -float("inf")
+        spanI2 = spanprop.argmax(1)
+        spans2 = spanBatch[torch.arange(len(spanI2)), spanI2]
+        # spanBatch = spanBatch[spanprop > 0.5]
+        spanBatch = torch.stack((spans1, spans2), dim=1)
         cleartext = [
-            tokenizer.convert_ids_to_tokens(t[s[0].item() : s[1].item() + 1])
+            [
+                tokenizer.convert_tokens_to_string(
+                    tokenizer.convert_ids_to_tokens(
+                        t[s[0].item() : s[1].item() + 1]
+                    )
+                )
+                for s in spans
+            ]
             for (t, spans) in zip(tokens, spanBatch)
-            for s in spans
         ]
         return spanBatch, tokens, cleartext
 
