@@ -27,6 +27,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 src = "src.cap_4601_project_2:main"
+train = "semevalModel.train:train"
 
 [tool.black]
 line-length = 79

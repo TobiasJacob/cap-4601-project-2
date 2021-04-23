@@ -3,11 +3,12 @@
     "python.linting.enabled": true,
     "python.formatting.provider": "black",
     "editor.formatOnSave": true,
-    "python.pythonPath": ".venv/bin/python3.7",
+    "python.pythonPath": "/opt/conda/bin/python",
     "files.insertFinalNewline": true,
     "[python]": {
         "editor.codeActionsOnSave": {
             "source.organizeImports": true
         }
-    }
+    },
+    "python.linting.pylintEnabled": false
 }

@@ -1,9 +1,7 @@
 import torch
-from transformers import BertTokenizer
-from transformers import AlbertTokenizer
-
-from pureModel.relModels import BertForRelation, AlbertForRelation
-from pureModel.entityFinder import task_ner_labels
+from src.pureModel.entityFinder import task_ner_labels
+from src.pureModel.relModels import AlbertForRelation, BertForRelation
+from transformers import AlbertTokenizer, BertTokenizer
 
 task_rel_labels = {
     "ace04": ["PER-SOC", "OTHER-AFF", "ART", "GPE-AFF", "EMP-ORG", "PHYS"],
@@ -100,6 +98,8 @@ class RelFinder:
 
     def getRelations(self, text, entities):
         relationCandidates = self.generateRelationCandidates(text, entities)
+        if len(relationCandidates) == 0:
+            return []
         tokenized = []
         subjects = []
         objects = []
@@ -130,10 +130,20 @@ class RelFinder:
                         + [3]
                     )
                 subjects.append(
-                    (tokens.index(subStartMarker), tokens.index(subEndMarker))
+                    self.rel_tokenizer.convert_tokens_to_string(
+                        tokens[
+                            tokens.index(subStartMarker)
+                            + 1 : tokens.index(subEndMarker)
+                        ]
+                    )
                 )
                 objects.append(
-                    (tokens.index(objStartMarker), tokens.index(objEndMarker))
+                    self.rel_tokenizer.convert_tokens_to_string(
+                        tokens[
+                            tokens.index(objStartMarker)
+                            + 1 : tokens.index(objEndMarker)
+                        ]
+                    )
                 )
                 sub_idx.append(subI + 1)
                 obj_idx.append(objI + 1)
@@ -153,3 +163,14 @@ class RelFinder:
             if relClass > 0:
                 relations.append((relClass.item(), subject, obj))
         return relations
+
+    def printRelations(self, rels):
+        for (relClass, subject, obj) in rels:
+            print(
+                task_rel_labels[self.task][relClass]
+                + "("
+                + subject
+                + ","
+                + obj
+                + ")"
+            )
