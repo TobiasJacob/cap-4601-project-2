@@ -157,5 +157,10 @@ class RelFinder:
     def printRelations(self, rels):
         for (relClass, subject, obj) in rels:
             print(
-                task_rel_labels[self.task][relClass] + "(" + subject + "," + obj + ")"
+                task_rel_labels[self.task][relClass - 1]
+                + "("
+                + subject
+                + ","
+                + obj
+                + ")"
             )
