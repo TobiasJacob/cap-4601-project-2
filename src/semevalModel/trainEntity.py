@@ -82,10 +82,10 @@ def train():
                 scheduler.step()
                 optim.zero_grad()
                 lossesTrain.append(loss.item())
-                writer.add_scalar("loss/Train", lossesTrain[-1], iTot)
-                writer.add_scalar("f1/Train", f1.item(), iTot)
-                writer.add_scalar("precision/Train", precision.item(), iTot)
-                writer.add_scalar("recall/Train", recall.item(), iTot)
+                writer.add_scalar("lossEnt/Train", lossesTrain[-1], iTot)
+                writer.add_scalar("f1Ent/Train", f1.item(), iTot)
+                writer.add_scalar("precisionEnt/Train", precision.item(), iTot)
+                writer.add_scalar("recallEnt/Train", recall.item(), iTot)
             else:
                 with torch.no_grad():
                     model.eval()
@@ -98,10 +98,10 @@ def train():
                         spans_ner_label,
                     )
                     lossesVal.append(loss.item())
-                    writer.add_scalar("f1/Eval", f1.item(), iTot)
-                    writer.add_scalar("precision/Eval", precision.item(), iTot)
-                    writer.add_scalar("recall/Eval", recall.item(), iTot)
-                    writer.add_scalar("loss/Eval", lossesVal[-1], iTot)
+                    writer.add_scalar("f1Ent/Eval", f1.item(), iTot)
+                    writer.add_scalar("precisionEnt/Eval", precision.item(), iTot)
+                    writer.add_scalar("recallEnt/Eval", recall.item(), iTot)
+                    writer.add_scalar("lossEnt/Eval", lossesVal[-1], iTot)
             if iTot % 20 == 0:
                 for (i2, lr) in enumerate(scheduler.get_lr()):
                     writer.add_scalar("lr/" + str(i2), lr, iTot)

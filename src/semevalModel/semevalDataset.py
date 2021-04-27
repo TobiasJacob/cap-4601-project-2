@@ -4,8 +4,8 @@ from typing import List, Tuple
 import torch
 from transformers.models.albert import AlbertTokenizer
 
-datasetpathTrain = "pretrained/SemEval2010_task8_all_data/SemEval2010_task8_training/TRAIN_FILE.TXT"  # noqa: E501
-datasetpathTest = "pretrained/SemEval2010_task8_all_data/SemEval2010_task8_testing_keys/TEST_FILE_FULL.TXT"  # noqa: E501
+datasetpathTrain = "data/SemEval2010_task8_all_data/SemEval2010_task8_training/TRAIN_FILE.TXT"  # noqa: E501
+datasetpathTest = "data/SemEval2010_task8_all_data/SemEval2010_task8_testing_keys/TEST_FILE_FULL.TXT"  # noqa: E501
 
 relationTypes = [
     "Cause-Effect(e1,e2)",

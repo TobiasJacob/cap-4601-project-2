@@ -24,3 +24,20 @@ python -m isort .
 python -m black .
 python -m flake8
 ```
+
+## Train the models
+
+Run
+
+```console
+python -m src.semevalModel.trainEntity
+python -m src.semevalModel.trainRelation
+```
+
+## Run main
+
+Adjust the paths for the models directory. Run
+
+```console
+python -m src.cap_4601_project_2.main
+```
