@@ -13,9 +13,7 @@ def collate_fn_padd(batch):
     input_ids = pad_sequence([b[0] for b in batch], batch_first=True)
     token_type_ids = (input_ids == 0).type(torch.int)
     attention_mask = (input_ids != 0).type(torch.int)
-    spans = pad_sequence(
-        [b[1] for b in batch], batch_first=True, padding_value=0
-    )
+    spans = pad_sequence([b[1] for b in batch], batch_first=True, padding_value=0)
     spansMask = spans[:, :, 2] != 0
     spans_ner_label = pad_sequence(
         [b[2] for b in batch], batch_first=True, padding_value=0
@@ -51,9 +49,7 @@ def train():
         ]
     )
     # optim = torch.optim.Adagrad(model.parameters(recurse=True), lr=0.01)
-    scheduler = get_linear_schedule_with_warmup(
-        optim, 100, epochs * 10000 / 32
-    )
+    scheduler = get_linear_schedule_with_warmup(optim, 100, epochs * 10000 / 32)
 
     dataset = EntityDataset("albert-base-v2", device=device)
     dataloader = DataLoader(dataset, batch_size=32, collate_fn=collate_fn_padd)
@@ -93,12 +89,7 @@ def train():
             else:
                 with torch.no_grad():
                     model.eval()
-                    (
-                        loss,
-                        (f1, precision, recall),
-                        logits,
-                        spans_embedding,
-                    ) = model(
+                    (loss, (f1, precision, recall), logits, spans_embedding,) = model(
                         input_ids,
                         spans,
                         spansMask,

@@ -16,9 +16,7 @@ class AlbertForRelation(AlbertPreTrainedModel):
         # self.albert.resize_token_embeddings(vocab_size)
         self.dropout = nn.Dropout(self.config.hidden_dropout_prob)
         self.layer_norm = torch.nn.LayerNorm(self.config.hidden_size * 2)
-        self.classifier = nn.Linear(
-            self.config.hidden_size * 2, self.num_labels
-        )
+        self.classifier = nn.Linear(self.config.hidden_size * 2, self.num_labels)
         self.init_weights()
 
     def forward(
@@ -66,9 +64,7 @@ class AlbertForRelation(AlbertPreTrainedModel):
         sub_idx = [0] * spanBatch.shape[0]
         obj_idx = [0] * spanBatch.shape[0]
 
-        markers = tokenizer.convert_tokens_to_ids(
-            ["<e1>", "</e1>", "<e2>", "</e2>"]
-        )
+        markers = tokenizer.convert_tokens_to_ids(["<e1>", "</e1>", "<e2>", "</e2>"])
         for (i, (tokens, spans)) in enumerate(zip(tokenBatch, spanBatch)):
             i1S = spans[0, 0]
             i1E = spans[0, 1]

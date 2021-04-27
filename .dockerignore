@@ -130,3 +130,5 @@ dmypy.json
 *.bin.gz
 
 pretrained
+runs
+models

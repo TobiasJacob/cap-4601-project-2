@@ -44,9 +44,7 @@ class RelFinder:
             )
         else:
             bert_model_name = "pretrained/rel-alb-ctx0"
-            self.rel_tokenizer = AlbertTokenizer.from_pretrained(
-                bert_model_name
-            )
+            self.rel_tokenizer = AlbertTokenizer.from_pretrained(bert_model_name)
             self.rel_model = AlbertForRelation.from_pretrained(
                 bert_model_name, num_rel_labels=num_rel_labels
             )
@@ -80,12 +78,8 @@ class RelFinder:
                     possibleRelations.append(
                         (
                             newTokens,
-                            newTokens.index(
-                                f"<SUBJ_START={classes[subClass - 1]}>"
-                            ),
-                            newTokens.index(
-                                f"<OBJ_START={classes[objClass - 1]}>"
-                            ),
+                            newTokens.index(f"<SUBJ_START={classes[subClass - 1]}>"),
+                            newTokens.index(f"<OBJ_START={classes[objClass - 1]}>"),
                             f"<SUBJ_START={classes[subClass - 1]}>",
                             f"<SUBJ_END={classes[subClass - 1]}>",
                             f"<OBJ_START={classes[objClass - 1]}>",
@@ -119,15 +113,11 @@ class RelFinder:
             with torch.no_grad():
                 if self.task == "scierc":
                     tokenized.append(
-                        [102]
-                        + self.rel_tokenizer.convert_tokens_to_ids(tokens)
-                        + [103]
+                        [102] + self.rel_tokenizer.convert_tokens_to_ids(tokens) + [103]
                     )
                 else:
                     tokenized.append(
-                        [2]
-                        + self.rel_tokenizer.convert_tokens_to_ids(tokens)
-                        + [3]
+                        [2] + self.rel_tokenizer.convert_tokens_to_ids(tokens) + [3]
                     )
                 subjects.append(
                     self.rel_tokenizer.convert_tokens_to_string(
@@ -167,10 +157,5 @@ class RelFinder:
     def printRelations(self, rels):
         for (relClass, subject, obj) in rels:
             print(
-                task_rel_labels[self.task][relClass]
-                + "("
-                + subject
-                + ","
-                + obj
-                + ")"
+                task_rel_labels[self.task][relClass] + "(" + subject + "," + obj + ")"
             )

@@ -61,9 +61,7 @@ class EntityFinder:
             _, predicted_label = ner_logits.max(2)
             predicted_label = predicted_label.cpu().numpy()
             last_hidden = last_hidden.cpu().numpy()
-        entities = [
-            (spans[i], v) for i, v in enumerate(predicted_label[0]) if v != 0
-        ]
+        entities = [(spans[i], v) for i, v in enumerate(predicted_label[0]) if v != 0]
         return (entities, tokens)
 
     def printEntities(self, text, entities):

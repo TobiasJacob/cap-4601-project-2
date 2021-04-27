@@ -17,6 +17,7 @@ blis @ file:///tmp/build/80754af9/cython-blis_1613319335612/work
 boto3==1.17.32
 botocore==1.20.32
 brotlipy==0.7.0
+cachetools==4.2.1
 catalogue==1.0.0
 certifi==2020.12.5
 cffi @ file:///tmp/build/80754af9/cffi_1605538068321/work
@@ -49,6 +50,8 @@ future==0.18.2
 gitdb==4.0.7
 GitPython==3.1.14
 glob2 @ file:///home/linux1/recipes/ci/glob2_1610991677669/work
+google-auth==1.29.0
+google-auth-oauthlib==0.4.4
 graphsurgeon @ file:///workspace/TensorRT-7.2.2.3/graphsurgeon/graphsurgeon-0.4.5-py2.py3-none-any.whl
 grpcio==1.36.1
 h5py==3.2.1
@@ -116,8 +119,8 @@ numpy @ file:///tmp/build/80754af9/numpy_and_numpy_base_1603479643886/work
 nvidia-dali-cuda110==0.31.0
 nvidia-dlprof-pytorch-nvtx @ file:///nvidia/opt/dlprof/bin/nvidia_dlprof_pytorch_nvtx-1.0.0-py3-none-any.whl
 nvidia-pyprof @ git+https://github.com/NVIDIA/PyProf@5e3756a779aee4b673adbc614b3a0ac96dc94485
-nvidia-tensorboard @ file:///nvidia/opt/tensorboard_install/nvidia_tensorboard-1.15.0%2Bnv21.03-py3-none-any.whl
 nvidia-tensorboard-plugin-dlprof @ file:///nvidia/opt/tensorboard_install/nvidia_tensorboard_plugin_dlprof-0.12-py3-none-any.whl
+oauthlib==3.1.0
 onnx @ file:///opt/pytorch/pytorch/third_party/onnx
 onnxruntime==1.7.0
 overrides==3.1.0
@@ -146,6 +149,8 @@ protobuf==3.15.6
 psutil @ file:///tmp/build/80754af9/psutil_1612298023621/work
 ptyprocess @ file:///tmp/build/80754af9/ptyprocess_1609355006118/work/dist/ptyprocess-0.7.0-py2.py3-none-any.whl
 py==1.10.0
+pyasn1==0.4.8
+pyasn1-modules==0.2.8
 pybind11==2.6.2
 pycocotools @ git+https://github.com/nvidia/cocoapi.git@6ac4a93058202603f36fd1ce47228e7d81119e5a#subdirectory=PythonAPI
 pycodestyle==2.5.0
@@ -177,8 +182,10 @@ PyYAML==5.4.1
 pyzmq==22.0.3
 regex==2021.3.17
 requests @ file:///tmp/build/80754af9/requests_1592841827918/work
+requests-oauthlib==1.3.0
 resampy==0.2.2
 revtok @ git+git://github.com/jekbradbury/revtok.git@f1998b72a941d1e5f9578a66dc1c20b01913caab
+rsa==4.7.2
 ruamel-yaml==0.15.87
 s3transfer==0.3.6
 sacrebleu==1.2.10
@@ -211,7 +218,9 @@ subprocess32==3.5.4
 subword-nmt @ git+git://github.com/rsennrich/subword-nmt.git@48ba99e657591c329e0003f0c6e32e493fa959ef
 tabledata==1.1.3
 tabulate==0.8.9
-tensorboard @ file:///nvidia/opt/tensorboard_install/tensorboard-shim
+tensorboard==2.5.0
+tensorboard-data-server==0.6.0
+tensorboard-plugin-wit==1.8.0
 tensorboardX==2.2
 tensorrt @ file:///workspace/TensorRT-7.2.2.3/python/tensorrt-7.2.2.3-cp38-none-linux_x86_64.whl
 terminado==0.9.3
@@ -222,6 +231,7 @@ threadpoolctl==2.1.0
 tokenizers==0.10.2
 toml==0.10.2
 torch @ file:///opt/pytorch/pytorch
+torch-tb-profiler==0.1.0
 torchtext @ file:///opt/pytorch/text
 torchvision @ file:///opt/pytorch/vision
 tornado==6.1

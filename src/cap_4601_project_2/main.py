@@ -2,9 +2,7 @@ import torch
 from src.pureModel.entityFinder import EntityFinder
 from src.pureModel.relFinder import RelFinder
 from src.semevalModel.entityModel import SemevalModel as SemevalEntityModel
-from src.semevalModel.relationModel import (
-    AlbertForRelation as SemevalRelationModel,
-)
+from src.semevalModel.relationModel import AlbertForRelation as SemevalRelationModel
 from src.semevalModel.semevalDataset import relationTypes
 from transformers.models.albert import AlbertTokenizer
 

@@ -47,9 +47,7 @@ def train():
             },
         ]
     )
-    scheduler = get_linear_schedule_with_warmup(
-        optim, 100, epochs * 10000 / 32
-    )
+    scheduler = get_linear_schedule_with_warmup(optim, 100, epochs * 10000 / 32)
 
     iTot = 0
     for epoch in range(epochs):

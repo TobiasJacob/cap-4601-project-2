@@ -28,9 +28,7 @@ class BertForEntity(BertPreTrainedModel):
 
         self.bert = BertModel(config)
         self.hidden_dropout = nn.Dropout(config.hidden_dropout_prob)
-        self.width_embedding = nn.Embedding(
-            max_span_length + 1, width_embedding_dim
-        )
+        self.width_embedding = nn.Embedding(max_span_length + 1, width_embedding_dim)
 
         self.ner_classifier = nn.Sequential(
             FeedForward(
@@ -61,9 +59,7 @@ class BertForEntity(BertPreTrainedModel):
         spans_mask: (batch_size, num_spans, )
         """
         spans_start = spans[:, :, 0].view(spans.size(0), -1)
-        spans_start_embedding = batched_index_select(
-            sequence_output, spans_start
-        )
+        spans_start_embedding = batched_index_select(sequence_output, spans_start)
         spans_end = spans[:, :, 1].view(spans.size(0), -1)
         spans_end_embedding = batched_index_select(sequence_output, spans_end)
 
@@ -114,9 +110,7 @@ class BertForEntity(BertPreTrainedModel):
                 active_labels = torch.where(
                     active_loss,
                     spans_ner_label.view(-1),
-                    torch.tensor(loss_fct.ignore_index).type_as(
-                        spans_ner_label
-                    ),
+                    torch.tensor(loss_fct.ignore_index).type_as(spans_ner_label),
                 )
                 loss = loss_fct(active_logits, active_labels)
             else:
@@ -141,9 +135,7 @@ class AlbertForEntity(AlbertPreTrainedModel):
 
         self.albert = AlbertModel(config)
         self.hidden_dropout = nn.Dropout(config.hidden_dropout_prob)
-        self.width_embedding = nn.Embedding(
-            max_span_length + 1, width_embedding_dim
-        )
+        self.width_embedding = nn.Embedding(max_span_length + 1, width_embedding_dim)
 
         self.ner_classifier = nn.Sequential(
             FeedForward(
@@ -174,9 +166,7 @@ class AlbertForEntity(AlbertPreTrainedModel):
         spans_mask: (batch_size, num_spans, )
         """
         spans_start = spans[:, :, 0].view(spans.size(0), -1)
-        spans_start_embedding = batched_index_select(
-            sequence_output, spans_start
-        )
+        spans_start_embedding = batched_index_select(sequence_output, spans_start)
         spans_end = spans[:, :, 1].view(spans.size(0), -1)
         spans_end_embedding = batched_index_select(sequence_output, spans_end)
 
@@ -226,9 +216,7 @@ class AlbertForEntity(AlbertPreTrainedModel):
                 active_labels = torch.where(
                     active_loss,
                     spans_ner_label.view(-1),
-                    torch.tensor(loss_fct.ignore_index).type_as(
-                        spans_ner_label
-                    ),
+                    torch.tensor(loss_fct.ignore_index).type_as(spans_ner_label),
                 )
                 loss = loss_fct(active_logits, active_labels)
             else:

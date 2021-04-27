@@ -37,17 +37,11 @@ class SemevalModel(AlbertPreTrainedModel):
 
         self.albert = AlbertModel(config)
         self.hidden_dropout = nn.Dropout(config.hidden_dropout_prob)
-        self.width_embedding = nn.Embedding(
-            max_span_length + 1, width_embedding_dim
-        )
+        self.width_embedding = nn.Embedding(max_span_length + 1, width_embedding_dim)
 
-        self.layer_norm = nn.LayerNorm(
-            config.hidden_size * 2 + width_embedding_dim
-        )
+        self.layer_norm = nn.LayerNorm(config.hidden_size * 2 + width_embedding_dim)
         self.ner_classifier = nn.Sequential(
-            nn.Linear(
-                config.hidden_size * 2 + width_embedding_dim, head_hidden_dim
-            ),
+            nn.Linear(config.hidden_size * 2 + width_embedding_dim, head_hidden_dim),
             nn.Dropout(0.2),
             nn.ReLU(),
             nn.LayerNorm(head_hidden_dim),
@@ -61,9 +55,7 @@ class SemevalModel(AlbertPreTrainedModel):
 
     def getEntities(self, tokenizer, sentences, maxSpanLen=8):
         tokens = tokenizer(sentences)["input_ids"]
-        input_ids = pad_sequence(
-            [torch.tensor(t) for t in tokens], batch_first=True
-        )
+        input_ids = pad_sequence([torch.tensor(t) for t in tokens], batch_first=True)
         spanBatch = [getSpans(t, maxSpanLen) for t in tokens]
         spanBatch = pad_sequence(spanBatch, batch_first=True)
         spanprop, _ = self(
@@ -84,9 +76,7 @@ class SemevalModel(AlbertPreTrainedModel):
         cleartext = [
             [
                 tokenizer.convert_tokens_to_string(
-                    tokenizer.convert_ids_to_tokens(
-                        t[s[0].item() : s[1].item() + 1]
-                    )
+                    tokenizer.convert_ids_to_tokens(t[s[0].item() : s[1].item() + 1])
                 )
                 for s in spans
             ]
@@ -116,9 +106,7 @@ class SemevalModel(AlbertPreTrainedModel):
         spans_mask: (batch_size, num_spans, )
         """
         spans_start = spans[:, :, 0]
-        spans_start_embedding = batched_index_select(
-            sequence_output, spans_start
-        )
+        spans_start_embedding = batched_index_select(sequence_output, spans_start)
         spans_end = spans[:, :, 1]
         spans_end_embedding = batched_index_select(sequence_output, spans_end)
 
