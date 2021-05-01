@@ -6,13 +6,14 @@
 
 ## Dev setup
 
-This project requires a hell of dependencies. Mostly due to various deep learning frameworks used in the PURE model. Luckly, those dependencies can be managed well with poetry. However, it looks like this model only works under linux.
+This project requires a hell of dependencies. Mostly due to various deep learning frameworks used in the PURE model. There is a docker container provided to deal with those issues.
 
 Install all required packages with
 
 ```console
-pip install requirementsGPU
+pip install -r requirementsGPU.txt
 ```
+
 Update the pre-commit hooks
 
 ```console
