@@ -37,13 +37,13 @@ class RelFinder:
         self.task = task
         num_rel_labels = len(task_rel_labels[task]) + 1
         if task == "scierc":
-            bert_model_name = "data/rel-scib-ctx0"
+            bert_model_name = "/workspaces/cap-4601-project-2/data/rel-scib-ctx0"
             self.rel_tokenizer = BertTokenizer.from_pretrained(bert_model_name)
             self.rel_model = BertForRelation.from_pretrained(
                 bert_model_name, num_rel_labels=num_rel_labels
             )
         else:
-            bert_model_name = "data/rel-alb-ctx0"
+            bert_model_name = "/workspaces/cap-4601-project-2/data/rel-alb-ctx0"
             self.rel_tokenizer = AlbertTokenizer.from_pretrained(bert_model_name)
             self.rel_model = AlbertForRelation.from_pretrained(
                 bert_model_name, num_rel_labels=num_rel_labels

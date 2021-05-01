@@ -1,6 +1,8 @@
 # CAP 4601 Project 2
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/TobiasJacob/cap-4601-project-2).
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/TobiasJacob/cap-4601-project-2)
+
+[Try out this model in Google Colab](https://colab.research.google.com/drive/1ZYmw0MZ83Ce2DdrlxoeBQ6HEuYLJG9jc?usp=sharing)
 
 ## Dev setup
 

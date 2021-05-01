@@ -23,7 +23,7 @@ class EntityFinder:
         num_ner_labels = len(task_ner_labels[task]) + 1
         self.max_span_length = 8
         if task == "scierc":
-            bert_model_name = "data/ent-scib-ctx0"
+            bert_model_name = "/workspaces/cap-4601-project-2/data/ent-scib-ctx0"
             self.tokenizer = BertTokenizer.from_pretrained(bert_model_name)
             self.bert_model = BertForEntity.from_pretrained(
                 bert_model_name,
@@ -31,7 +31,7 @@ class EntityFinder:
                 max_span_length=self.max_span_length,
             )
         else:  # ace05
-            bert_model_name = "data/ent-alb-ctx0"
+            bert_model_name = "/workspaces/cap-4601-project-2/data/ent-alb-ctx0"
             self.tokenizer = AlbertTokenizer.from_pretrained(bert_model_name)
             self.bert_model = AlbertForEntity.from_pretrained(
                 bert_model_name,
