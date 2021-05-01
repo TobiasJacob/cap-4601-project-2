@@ -6,7 +6,7 @@
 
 ## Dev setup
 
-This project requires a hell of dependencies. Mostly due to various deep learning frameworks used in the LUKE model. Luckly, those dependencies can be managed well with poetry. However, it looks like this model only works under linux.
+This project requires a hell of dependencies. Mostly due to various deep learning frameworks used in the PURE model. Luckly, those dependencies can be managed well with poetry. However, it looks like this model only works under linux.
 
 Install all required packages with
 
